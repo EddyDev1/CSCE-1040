@@ -207,96 +207,76 @@ double LibraryItems::findNGetPrice(int x5)
 
 int LibraryItems::findLoanPeriod(int x6)
 {
-    int per;
-    int k = 0;
-    for (int i =0; i < count; i++)
+    int i = 0;
+    for (; i < count; i++)
     {
         //find book and return the price
         if (LibItemList[i]->getIDNum() == x6)
-        {
-            per = LibItemList[i]->getLoanPer();
-        } else {
-            k++;
-        }
+            return LibItemList[i]->getLoanPer();
     }
     //tell user what they entered was not found
-    if(k == count)
-    {
+    if(i == count)
         cout<<"No match found."<<endl;
-        return 0;
-    }
-    return per;
+
+    return -1;
 }
 
 void LibraryItems::editP(int x2, double xd)
-{ int k=0;
-    for (int i =0; i < count; i++)
+{ 
+    int i = 0;
+    for (; i < count; i++)
     {
         if (LibItemList[i]->getIDNum() == x2)
         {
             LibItemList[i]->setCost(xd);
-        } else {
-	k++;
-	}
-    }
-    //tell user what they entered was not found
-if(k == count)
-{
- cout<<"No match found."<<endl;
-}
-}
-
-void LibraryItems::findNPrint(int x1) {
-    int k = 0;
-    for (auto it = LibItemList.begin(); it != LibItemList.end(); ++it) {
-        if ((*it)->getIDNum() == x1) {
-            cout << "ID: " << (*it)->getIDNum() << " price: " << (*it)->getCost() << " status: " << (*it)->getStatus()
-                 << " loan info: " << (*it)->getLoanPer() << endl;
-
-            if (typeid(**it) == typeid(AudioCD)) {
-                AudioCD *temp = dynamic_cast<AudioCD *>(*it);
-                cout << "CD info: " << temp->getArtist() << " " << temp->getTitle() << " " << temp->getNumOfTrack()
-                     << " " << temp->getReleaseDate() << " " << temp->getGenre() << endl;
-            } else if (typeid(**it) == typeid(Book)) {
-                Book *temp = dynamic_cast<Book *>(*it);
-                cout << "Book info: " << temp->getAuthorName() << " " << temp->getTitle() << " " << temp->getISBN()
-                     << " " << temp->getBookCat() << endl;
-            } else if (typeid(**it) == typeid(DVD)) {
-                DVD *temp = dynamic_cast<DVD *>(*it);
-                cout << "DVD info: " << temp->getDTitle() << " " << temp->getDCat() << " " << temp->getRunTime() << " "
-                     << temp->getStudio() << " " << temp->getDRelDate() << endl;
-            }
-        } else {
-            k++;
+            return;
         }
     }
 
     //tell user what they entered was not found
-if(k == count)
-{
- cout<<"No match found."<<endl;
+    if(i == count)
+        cout<<"No match found."<<endl;
 }
+
+void LibraryItems::findNPrint(int x1) {
+    auto it = LibItemList.begin();
+    for (; it != LibItemList.end(); ++it) {
+        if ((*it)->getIDNum() == x1) {
+            if (typeid(**it) == typeid(AudioCD)) {
+                AudioCD *temp = dynamic_cast<AudioCD *>(*it);
+                temp->print();
+            } else if (typeid(**it) == typeid(Book)) {
+                Book *temp = dynamic_cast<Book *>(*it);
+                temp->print();
+            } else if (typeid(**it) == typeid(DVD)) {
+                DVD *temp = dynamic_cast<DVD *>(*it);
+                temp->print();
+            }
+            return;
+        }
+    }
+
+    //tell user what they entered was not found
+    if(it == LibItemList.end())
+        cout<<"No match found."<<endl;
 }
 
 void LibraryItems::printLibItem() {
     for(auto it = LibItemList.begin(); it != LibItemList.end(); ++it) {
         if (typeid(**it) == typeid(LibraryItem)) {
-        cout << "ID: " << (*it)->getIDNum() << " price: " << setprecision(4) << (*it)->getCost() << " status: "
-             << (*it)->getStatus() << " loan period: " << (*it)->getLoanPer() << endl;
-    }
+            (*it)->print();
+        }
+
         if(typeid(**it) == typeid(AudioCD))
         {
             AudioCD *temp = dynamic_cast<AudioCD*>(*it);
             temp->print();
-            //cout<<"CD info: "<<endl<<"Artist: "<<temp->getArtist()<<" Title: "<<temp->getTitle()<<" Number of Tracks: "<<temp->getNumOfTrack()<<" Released: "<<temp->getReleaseDate()<<" Genre: "<<temp->getGenre()<<endl;
         } else if(typeid(**it) == typeid(Book)){
             Book *temp = dynamic_cast<Book*>(*it);
             temp->print();
-            //cout<<"Book info: "<<endl<<"Author: "<<temp->getAuthorName()<<" Title: "<<temp->getTitle()<<" ISBN: "<<temp->getISBN()<<" Genre: "<<temp->getBookCat()<<endl;
         } else if(typeid(**it) == typeid(DVD)){
             DVD *temp = dynamic_cast<DVD*>(*it);
             temp->print();
-            //cout<<"DVD info: "<<endl<<"Title: "<<temp->getDTitle()<<" Category: "<<temp->getDCat()<<" Run time: "<<temp->getRunTime()<<" Studio: "<<temp->getStudio()<<" Released: "<<temp->getDRelDate()<<endl;
         }
     }
 }
@@ -304,9 +284,10 @@ void LibraryItems::printLibItem() {
 void LibraryItems::loadLibItems()
 {
     ifstream fin;
-    int id; double num;
-    string stat; int lp;
-    int itype;
+    int id, itype, lp; 
+    double num;
+    string stat;
+
     fin.open("items.dat");
     //get size for the vector
     fin >> count; //fin.ignore();
@@ -317,41 +298,60 @@ void LibraryItems::loadLibItems()
     {
         
         fin >> id >> num;
-        fin>>stat;
+        fin >> stat;
         fin >> lp >> itype;
 
-        if(itype == 1){
-            LibItemList.push_back(new LibraryItem(id, num, stat, lp));
-        } else if(itype == 2){
-            string s,s2,s3,s4;
-            getline(fin, s, ','); //FIXME: getline does not work properly
-            getline(fin, s2, ','); //might have to use commas again
-            getline(fin, s3, ',');
-            getline(fin, s4);
+        switch (itype)
+        {
+            case 1:
+                LibItemList.push_back(new LibraryItem(id, num, stat, lp));
+                break;
+            case 2:
+            {
+                string s,s2,s3,s4;
+                getline(fin, s, ','); //FIXME: getline does not work properly
+                getline(fin, s2, ','); //might have to use commas again
+                getline(fin, s3, ',');
+                getline(fin, s4);
 
-            LibItemList.push_back(new Book(id, num, stat, lp, s, s2, s3, s4));
-        } else if(itype == 3){
-            string s,s2,s3, s4;
-            int i2;
-            getline(fin, s, ',');
-            getline(fin, s2, ',');
-            fin>>i2;
-            getline(fin,s4,',');
-            getline(fin,s3);
+                LibItemList.push_back(new Book(id, num, stat, lp, s, s2, s3, s4));
+            }
+            break;
+            case 3:
+            {
+                string s,s2,s3, s4;
+                int i2;
 
-            LibItemList.push_back(new AudioCD(id, num, stat, lp, s, s2, i2, s4, s3));
-        } else if(itype == 4){
-            string s,s2,s3;
-            int i2,i3;
-            getline(fin, s, ',');
-            getline(fin, s2, ',');
-            fin>>i2;
-            getline(fin,s3,' ');
-            fin>>i3;
+                getline(fin, s, ',');
+                getline(fin, s2, ',');
+                
+                fin>>i2;
+                
+                getline(fin,s4,',');
+                getline(fin,s3);
 
-            LibItemList.push_back(new DVD(id, num, stat, lp, s, s2, i2, s3, i3));
+                LibItemList.push_back(new AudioCD(id, num, stat, lp, s, s2, i2, s4, s3));
+            }
+            break;
+            case 4:
+            {
+                string s,s2,s3;
+                int i2,i3;
+                
+                getline(fin, s, ',');
+                getline(fin, s2, ',');
+                
+                fin>>i2;
+                
+                getline(fin,s3,' ');
+                
+                fin>>i3;
+
+                LibItemList.push_back(new DVD(id, num, stat, lp, s, s2, i2, s3, i3));
+            }
         }
     }
+
     fin.close();
 }
 
@@ -364,36 +364,36 @@ void LibraryItems::storeLibItems()
     
     LibraryItem *temp;
     //now the data may follow
-   for (auto it = LibItemList.begin(); it !=LibItemList.end(); ++it)
+   for (auto it = LibItemList.begin(); it != LibItemList.end(); ++it)
     {
-        temp= *it;
+        temp = *it;
         fout << temp->getIDNum() <<" "<< temp->getCost()<<" "<<temp->getStatus()<<" "<<temp->getLoanPer()<<endl;
+
         if(typeid((**it)) == typeid(LibraryItem)){
-            fout<<"1"<<endl;
+            fout<<"1\n";
         } else if(typeid(**it) == typeid(AudioCD)){
             AudioCD *temp = dynamic_cast<AudioCD*>(*it);
-            fout<<"3"<<endl;
+            fout<<"3\n";
             fout<<temp->getArtist()<<", "<<temp->getTitle()<<", "<<temp->getNumOfTrack()<<" "<<temp->getReleaseDate()<<", "<<temp->getGenre()<<endl;
         } else if(typeid(**it) == typeid(Book)){
             Book *temp = dynamic_cast<Book*>(*it);
-            fout<<"2"<<endl;
+            fout<<"2\n";
             fout<<temp->getAuthorName()<<", "<<temp->getTitle()<<", "<<temp->getISBN()<<", "<<temp->getBookCat()<<endl;
         } else if(typeid(**it) == typeid(DVD)){
             DVD *temp = dynamic_cast<DVD*>(*it);
-            fout<<"4"<<endl;
+            fout<<"4\n";
             fout<<temp->getDTitle()<<", "<<temp->getDCat()<<", "<<temp->getRunTime()<<" "<<temp->getStudio()<<", "<<temp->getDRelDate()<<endl;
         }
 
     }
+
     fout.close();
 }
 void LibraryItems::cleanUp()
 {
-       for (auto it = LibItemList.begin(); it !=LibItemList.end(); ++it)
-    {
-        
+    for (auto it = LibItemList.begin(); it !=LibItemList.end(); ++it)
         delete *it;
-    }
+    
     LibItemList.clear();
 }
 

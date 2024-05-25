@@ -23,10 +23,10 @@ Loan.o: Loan.cpp Loan.h
 	g++ -c Loan.cpp
 
 LibraryItems.o: LibraryItems.cpp DVD.h Book.h AudioCD.h LibraryItem.h LibraryItems.h
-	g++ -c LibraryItems.cpp
+	g++ -std=c++14 -c LibraryItems.cpp
 
 Loans.o: Loans.cpp Loan.h Loans.h
-	g++ -c Loans.cpp
+	g++ -std=c++14 -c Loans.cpp
 
 Patrons.o: Patrons.cpp Patron.h Patrons.h
 	g++ -c Patrons.cpp
