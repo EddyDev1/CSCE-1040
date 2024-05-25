@@ -7,6 +7,7 @@
 #include <iterator>
 #include <typeinfo>
 #include <ctime>
+
 #include "LibraryItem.h"
 #include "AudioCD.h"
 #include "Book.h"
@@ -90,8 +91,8 @@ void LibraryItems::addLibItem()
         }
     } else if(otype == 3){
         string ar, ai, ag, rd;
-        int at;
-        string stat; int lp;
+        int at, lp;
+        string stat;
 
         cout<<"Enter audio cd status: "<<endl; getline(cin,stat);
         cout<<"Enter audio cd loan period: "<<endl; cin>>lp; cin.ignore();
@@ -134,23 +135,21 @@ void LibraryItems::addLibItem()
 }
 
 void LibraryItems::deleLibItem(int x)
-{ int k = 0;
-    for (int i  = 0; i < count; i++)
+{ 
+    int i = 0;
+    for (; i < count; i++)
     {
         //find user and delete them
         if (LibItemList[i]->getIDNum() == x)
         {
             LibItemList.erase(LibItemList.begin()+i);
-        } else {
-	k++;
-	}
+            decCount();
+            return;
+        }
     }
     //tell user what they entered was not found
-if(k == count)
-{
- cout<<"No match found."<<endl;
-}
-decCount();
+    if(i == count)
+        cout<<"No match found."<<endl;
 }
 /*
 LibraryItem* LibraryItems::findBook(int y)
@@ -172,42 +171,38 @@ void LibraryItems::addNSet(double x2,char task3)
     //find book and update a variety of stuff
     for (int i =0; i < count; i++)
     {
-        if (LibItemList[i]->getIDNum() == x2 && toupper(task3) == 'A')
-	    {
- 	        LibItemList[i]->setStatus("Out");
-	    }
-        if (LibItemList[i]->getIDNum() == x2 && toupper(task3) == 'D')
+        if (LibItemList[i]->getIDNum() == x2)
         {
-            LibItemList[i]->setStatus("In");
-        }
-        if (LibItemList[i]->getIDNum() == x2 && toupper(task3) == 'L')
-        {
-            LibItemList[i]->setStatus("Lost");
+            switch (toupper(task3))
+            {
+                case 'A':
+                    LibItemList[i]->setStatus("Out");
+                    break;
+                case 'D':
+                    LibItemList[i]->setStatus("In");
+                    break;
+                case 'L':
+                    LibItemList[i]->setStatus("Lost");
+                    break;
+            }
         }
     }
 }
 
 double LibraryItems::findNGetPrice(int x5)
 {
-double totals;
-int k = 0;
-    for (int i =0; i < count; i++)
+    int i = 0;
+    for (; i < count; i++)
     {
         //find book and return the price
         if (LibItemList[i]->getIDNum() == x5)
-        {
-        totals = LibItemList[i]->getCost();
-        } else {
-	k++;
-	}
+            return LibItemList[i]->getCost();
     }
     //tell user what they entered was not found
-if(k == count)
-{
- cout<<"No match found."<<endl;
- return 0;
-}
-return totals;
+    if(i == count)
+        cout<<"No match found."<<endl;
+
+    return -1.0;
 }
 
 int LibraryItems::findLoanPeriod(int x6)

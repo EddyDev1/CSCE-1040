@@ -19,9 +19,7 @@ string getReleaseDate();
 string getGenre();
 
 private:
-    string artist;
-    string title;
+    string artist, title;
     int numOfTracks;
-    string releaseDate;
-    string genre;
+    string releaseDate, genre;
 };
