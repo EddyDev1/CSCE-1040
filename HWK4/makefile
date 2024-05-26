@@ -29,7 +29,7 @@ Loans.o: Loans.cpp Loan.h Loans.h
 	g++ -std=c++14 -c Loans.cpp
 
 Patrons.o: Patrons.cpp Patron.h Patrons.h
-	g++ -c Patrons.cpp
+	g++ -std=c++20 -c Patrons.cpp
 
 clean:
 	rm *.o *.gch PLibrary a.out

@@ -5,38 +5,36 @@
 #include <vector>
 #include <iterator>
 #include <iomanip>
+
 #include "Patron.h"
 #include "Patrons.h"
 
 using namespace std;
+
 const static int id_generator = 100000;
-int id_gen = 0;
-int save3;
+int id_gen = 0, save3;
 bool check3;
-void Patrons::incCount()
-{
- count++;
-}
-void Patrons::decCount()
-{
-count--;
-}
-int Patrons::getCount()
-{
-return count;
-}
+
+void Patrons::incCount() { count++; }
+void Patrons::decCount() { count--; }
+int Patrons::getCount() { return count; }
+
 void Patrons::addPatron()
 {
-    string buff; int num2; double num;
+    string buff; 
+    int num2; 
+    double num;
     Patron *temp;
+    
     //calculate patron id
     if(patronList.size() > 0)
     {
         save3 = patronList.at(patronList.size()-1)->getID();
-	check3 = true;
+	    check3 = true;
     } else {
-	check3 = false;
+	    check3 = false;
     }
+
     int id_gen2 = id_gen+id_generator;
     //get patron info
     cout << "Enter name: ";
@@ -50,11 +48,11 @@ void Patrons::addPatron()
     cout<<"Enter amount of items: ";
     cin>>num2;
     //create patron
-if(check3){
-    temp = new Patron(buff, save3+1, num, num2);
-    } else {
-	temp = new Patron(buff, id_gen2,num,num2);
-    }
+    if(check3)
+        temp = new Patron(buff, save3+1, num, num2);
+    else
+	    temp = new Patron(buff, id_gen2,num,num2);
+    
     patronList.push_back(temp);
     //update trackers
     incCount();
@@ -62,131 +60,99 @@ if(check3){
 }
 
 void Patrons::delePatron(int d)
-{ int j = 0; // track failed attempts when searching for id match
+{ // track failed attempts when searching for id match
 //find user by looping through vector
-    for (int i = 0; i < count; i++)
+    int j = 0;
+    for (auto& pat: patronList)
     {
-        //if patron found delete it
-        if (patronList[i]->getID() == d)
+        if (pat->getID() == d)
         {
-            patronList.erase(patronList.begin()+i);
-        } else {
-	    j++;
-	}
+            patronList.erase(patronList.begin()+j);
+            decCount();
+            return;
+        }
+        j++;
     }
-    //tell user what they entered was not found
-if(j == count)
-{
-cout<<"Patron does not exist."<<endl;
-}
-decCount();
+    
+    cout<<"Patron does not exist."<<endl;
 }
 
 Patron* Patrons::findPatron(int id)
 {
-    Patron *temp;
     for (int i =0; i < count; i++) //loop till patron is found
-    {
-        if (patronList[i]->getID() == id) return patronList[i];
+        if (patronList[i]->getID() == id) 
+            return patronList[i];
         
-    }
-  
     return NULL;
-  
 }
 void Patrons::addNSetPatron(int y , char a)
 {
- double rate = 0.25;
+    double rate = 0.25;
 //find patron and update a variety of things
     for (int i =0; i < count; i++)
     {
-       if(patronList[i]->getBal() == 0){
-        if (patronList[i]->getID() == y && toupper(a) == 'A')
-	{
- 	 patronList[i]->setBooksAmount((patronList[i]->getBooks())+1);
-	}
-        if (patronList[i]->getID() == y && toupper(a) == 'D')
-        {
-         patronList[i]->setBooksAmount(patronList[i]->getBooks()-1);
-        }
-        if (patronList[i]->getID() == y && toupper(a) == 'F')
-        {
-         patronList[i]->setBooksAmount(patronList[i]->getBal()+rate);
-        }
-       } else {
-	cout<<"Pay fines first."<<endl;
+        if(patronList[i]->getBal() == 0 && patronList[i]->getID() == y){
+            switch (toupper(a))
+            {
+                case 'A':
+                    patronList[i]->setBooksAmount((patronList[i]->getBooks())+1);
+                    break;
+                case 'D':
+                    patronList[i]->setBooksAmount(patronList[i]->getBooks()-1);
+                    break;
+                case 'F':
+                    patronList[i]->setBooksAmount(patronList[i]->getBal()+rate);
+                    break;
+                default:
+                    break;
+            }
+            return;
        }
     }
+    cout<<"Pay fines first."<<endl;
 }
 
 void Patrons::setPatronDebt(int xx, double xxx)
 {
     //find patron and set their new bal
-for(int i = 0; i< count; i++)
- {
-  if(patronList[i]->getID() == xx){
-	patronList[i]->setBal((patronList[i]->getBal())+xxx);
-    cout<<xxx<<" "<<patronList[i]->getBal();
-	}
- }
+    for(int i = 0; i< count; i++)
+    {
+    if(patronList[i]->getID() == xx){
+            patronList[i]->setBal((patronList[i]->getBal())+xxx);
+            cout<<xxx<<" "<<patronList[i]->getBal();
+            return;
+        }
+    }
 }
+
 void Patrons::editN(int xx2, string x4)
-{ int j = 0;
-for(int i = 0; i< count; i++)
- {
-    //if user is found edit the name
-  if(patronList[i]->getID() == xx2){
-        patronList[i]->setName(x4);
-	cout<<"Name change complete."<<endl;
-        } else {
-	j++;
-	}
- }
-//tell user what they entered was not found
-if(j == count)
-{
-cout<<"Patron does not exist."<<endl;
-}
+{ 
+    auto it = find_if(patronList.begin(), patronList.end(), [xx2](Patron* p) { return p->getID() == xx2; });
+    if (it != patronList.end())
+        (*it)->setName(x4), cout<< "Name change complete." << endl;
+    else
+        cout << "Patron does not exist." << endl;
 }
 int Patrons::findNGetBooks(int yyy)
 {
-int total;
-int j = 0;
-    for (int i =0; i < count; i++)
-    {
-        //if user is found return total
-        if (patronList[i]->getID() == yyy)
-        {
-        total = patronList[i]->getBooks();
-        } else {
-	j++;
-	}
-    }
-    //tell user what they entered was not found
-if(j == count)
-{
-cout<<"Patron does not exist."<<endl;
-return 0;
-}
-return total;
+    auto it = find_if(patronList.begin(), patronList.end(), [yyy](Patron* p) { return p->getID() == yyy; });
+    return it != patronList.end() ? (*it)->getBooks() : -1;
 }
 void Patrons::findNPrint(int yy)
-{ int j = 0;
-    for (int i =0; i < count; i++)
+{ 
+    int i = 0;
+    for (; i < count; i++)
     {
         //if user is found print all their data
         if (patronList[i]->getID() == yy)
         {
          cout<<"Patron id: "<<patronList[i]->getID()<<" Patron name: "<<patronList[i]->getName()<<" Patron balance: $"<<setprecision(4)<<patronList[i]->getBal()<<" Patron items: "<<patronList[i]->getBooks()<<endl;
-        } else {
-	j++;
-	}
+         return;
+        }
     }
     //tell user what they entered was not found
-if(j == count)
-{
-cout<<"Patron does not exist."<<endl;
-}
+    if(i == count)
+        cout<<"Patron does not exist."<<endl;
 }
 void Patrons::payFines(int x5x)
 {
@@ -216,11 +182,9 @@ cout<<"Patron does not exist."<<endl;
 }
 void Patrons::cleanUp()
 {
-       for (auto it = patronList.begin(); it !=patronList.end(); ++it)
-    {
-        
+    for (auto it = patronList.begin(); it !=patronList.end(); ++it)
         delete *it;
-    }
+
     patronList.clear();
 }
 
@@ -254,9 +218,9 @@ void Patrons::storePatrons()
 void Patrons::loadPatrons()
 {
     ifstream fin;
-    int id; double mon;
-    string name; int num;
-    string grabSpace;
+    int id, num; 
+    double mon;
+    string name, grabSpace;
     fin.open("patrons.dat");
     //establish size of vector
     fin >> count; fin.ignore();
@@ -264,13 +228,15 @@ void Patrons::loadPatrons()
     //gather data from file and create new patron and then add to vector
     for ( int i=0; i < count; i++)
     {
-        
         fin >> id;
+        
         getline(fin,grabSpace,',');
-	getline(fin, name,',');
-	fin >> mon >> num;
+	    getline(fin, name,',');
+	    
+        fin >> mon >> num;
+        
         patronList.push_back( new Patron(name,id,mon,num) );
     }
-    fin.close();
     
+    fin.close();
 }
