@@ -13,12 +13,9 @@
 
 extern Patrons pat;
 extern LibraryItems lit;
+const int timer = 86400;
 
 using namespace std;
-
-int id_gens = 0;
-int save2;
-bool confirm;
 
 int Loans::getCount() { return count; }
 void Loans::incCount() { count++; }
@@ -26,45 +23,38 @@ void Loans::decCount() { count--; }
 
 void Loans::addLoan()
 {
-    string buff; 
-    int num2, num, num3;
+    int itemId, patronId, dueDate, lastId = 0, id_gens = 0;
     Loan *temp;
-    char taskA = 'a';
     
     //determine loan id
     if(loanList.size() > 0)
-    {
-	    save2 = loanList.at(loanList.size()-1)->getLoanID();
-	    confirm  = true;
-    } else {
-	    confirm = false;
-    }
+	    lastId = loanList.at(loanList.size()-1)->getLoanID();
 
     //gather info
     cout<<"Enter Library item id: ";
-    cin>>num2;
+    cin>>itemId;
     cin.ignore();
-	lit.addNSet(num2,toupper(taskA));
-    cout<<"Enter patron id: ";
-    cin>>num;
-    cin.ignore();
-	pat.addNSetPatron(num,toupper(taskA));
-    
-    int check = pat.findNGetBooks(num);
-//create loans
-    if(check+1 < 7)
-    {
-        time_t now = time(0);
-        num3 = int(time(0))+(60*60*24*(lit.findLoanPeriod(num2)));
-        save2++;
 
-        if(confirm)
-            temp = new Loan(save2, num2, num, int(now), num3, 0, "Normal");
+    cout<<"Enter patron id: ";
+    cin>>patronId;
+    cin.ignore();
+
+    lit.addNSet(itemId,toupper('a'));
+	pat.addNSetPatron(patronId,toupper('a'));
+    
+//create loans
+    if(pat.findNGetBooks(patronId) + 1 < 7)
+    {
+        time_t time_at_checkout = time(0);
+        dueDate = int(time(0))+(timer*(lit.findLoanPeriod(itemId)));
+
+        if(lastId++)
+            temp = new Loan(lastId, itemId, patronId, int(time_at_checkout), dueDate, 0, "Normal");
         else
-            temp = new Loan(id_gens,num2,num,int(now),num3,0,"Normal");
+            temp = new Loan(id_gens, itemId, patronId, int(time_at_checkout), dueDate, 0, "Normal");
 
         loanList.push_back(temp);
-        incCount();
+        count++;
         id_gens++;
 
     } else {
@@ -73,23 +63,23 @@ void Loans::addLoan()
 }
 
 
-void Loans::deleLoan(int x)
+void Loans::deleteLoan(int id)
 {
-    time_t now = time(0);
+    time_t currTime = time(0);
     int i = 0;
 
     for (; i < count; i++)
     {
         //if user is found make sure its before their due date then delete loan while updating books/patrons
-        if(loanList[i]->getLoanID() == x)
+        if(loanList[i]->getLoanID() == id)
         {
-            if(now < loanList[i]->getDueDate())
+            if(currTime < loanList[i]->getDueDate())
             {
                 pat.addNSetPatron(loanList[i]->getPatronID(),'d');
                 pat.addNSetPatron(loanList[i]->getPatronID(),'f');
                 lit.addNSet(loanList[i]->getLibItemID(),'d');
                 loanList.erase(loanList.begin()+i);
-                decCount();
+                count--;
                 return;
             }
        }
@@ -102,7 +92,7 @@ void Loans::deleLoan(int x)
 }
 
 
-void Loans::printOD()
+void Loans::printOverdueLoans()
 {
     Loan  *temp; 
     int l = 0;
@@ -112,8 +102,8 @@ void Loans::printOD()
     //if due date has passed update info and print loan
         if(temp->getDueDate() < time(0))
         {
-            time_t here = temp->getDueDate();
-            char* date_time = ctime(&here);
+            time_t time = temp->getDueDate();
+            char* date_time = ctime(&time);
             cout << "Loan id: " << temp->getLoanID() << " Library item id: " << temp->getLibItemID() <<" Patron id: "<<temp->getPatronID()<<" Due date: "<<date_time
             <<" Loan Status: "<<temp->getStatus()<<endl;
             pat.findNPrint(temp->getPatronID());
@@ -126,28 +116,28 @@ void Loans::printOD()
 
 void Loans::updateFine()
 {
-    time_t now = time(0);
+    time_t currTime = time(0);
     for(int i = 0; i < count; i ++)
     {
         //if patron still hasnt checked in book update info
-        if(loanList[i]->getDueDate()+(60*60*24) < now)
+        if(loanList[i]->getDueDate()+timer < currTime)
         {
             pat.setPatronDebt(loanList[i]->getPatronID(),0.25f);
             return;
         }
     }
 }
-void Loans::listPatItems()
+void Loans::listPatronItems()
 {
-    int nums3, i = 0;
+    int patronId, i = 0;
     
     cout<<"Enter patron id: ";
-    cin>>nums3;
+    cin>>patronId;
 
     for(; i < count; i++)
     {
         //if data entered is found update info
-        if(loanList[i]->getPatronID() == nums3){
+        if(loanList[i]->getPatronID() == patronId){
             lit.findNPrint(loanList[i]->getLibItemID());
             return;
         } 
@@ -158,18 +148,18 @@ void Loans::listPatItems()
         cout<<"Patron has 0 Library items checked out."<<endl;
 }
 
-void Loans::editLID(int n)
+void Loans::editLoanID(int new_id)
 {
-    int sumn, i = 0;
+    int loanId, i = 0;
     
     cout<<"Enter loan id: ";
-    cin>>sumn;
+    cin>>loanId;
     
-    for(; i< count; i++)
+    for(; i < count; i++)
     {
     //if data entered is found update info
-        if(loanList[i]->getLoanID() == sumn){
-            loanList[i]->setLoanID(n);
+        if(loanList[i]->getLoanID() == loanId){
+            loanList[i]->setLoanID(new_id);
             return;
         }
 	}
@@ -181,20 +171,18 @@ void Loans::editLID(int n)
 
 void Loans::lostBook()
 {
-    double nums; 
-    int i = 0;
+    int itemId, i = 0;
     
     cout<<"Enter Library item id: ";
-    cin>>nums;
+    cin>>itemId;
     
     for(; i < count; i++)
     {
     //if info entered is found update info
-        if(loanList[i]->getLibItemID() == nums)
+        if(loanList[i]->getLibItemID() == itemId)
         {
-	        lit.addNSet(nums,'l');
-	        double debt = lit.findNGetPrice(nums);
-	        pat.setPatronDebt(loanList[i]->getPatronID(),debt);
+	        lit.addNSet(itemId,'l');
+	        pat.setPatronDebt(loanList[i]->getPatronID(), lit.findNGetPrice(itemId));
             return;
         }
     }
@@ -205,13 +193,13 @@ void Loans::lostBook()
 }
 
 
-void Loans::recheckLoan(int x22)
+void Loans::recheckLoan(int id)
 {
     for (auto& loan : loanList)
     {
-        if(loan->getLoanID() == x22 && loan->getCheck() < 1)
+        if(loan->getLoanID() == id && loan->getCheck() < 1)
         {
-            loan->setDueDate(loan->getDueDate()+(60*60*24*10));
+            loan->setDueDate(loan->getDueDate()+timer);
             loan->setCheck(1);
             return;
         }
@@ -222,26 +210,26 @@ void Loans::recheckLoan(int x22)
 }
 
 
-void Loans::findNSetStatus()
+void Loans::findAndSetStatus()
 {
-    time_t now = time(0);
+    time_t currTime = time(0);
     for(int i = 0; i < count; i++)
     {
         //find the loan and update the status
-        if(loanList[i]->getDueDate() < now)
+        if(loanList[i]->getDueDate() < currTime)
 	        loanList[i]->setStatus("Overdue");
     }
 }
 
 
-void Loans::findNPrint(int yy)
+void Loans::findAndPrintLoan(int id)
 { 
     for (auto& loan : loanList)
     {
-        if(loan->getLoanID() == yy)
+        if(loan->getLoanID() == id)
         {
-            time_t here = loan->getDueDate();
-            char* date_time = ctime(&here);
+            time_t time = loan->getDueDate();
+            char* date_time = ctime(&time);
             cout << "Loan id: " << loan->getLoanID() << " Library item id: " << loan->getLibItemID() <<" Patron id: "<<loan->getPatronID()<<" Due date: "<<date_time<<" Loan Status: "<<loan->getStatus()<<endl;
             return; 
         }
@@ -258,8 +246,8 @@ void Loans::printLoans()
     for (auto it = loanList.begin(); it !=loanList.end(); ++it)
     {
         temp = *it;
-        time_t here = temp->getDueDate();
-        char* date_time = ctime(&here);
+        time_t time = temp->getDueDate();
+        char* date_time = ctime(&time);
         cout << "Loan id: " << temp->getLoanID() << " Library item id: " << temp->getLibItemID() <<" Patron id: "<<temp->getPatronID()<<" Due date: "<<date_time<<" Loan Status: "<<temp->getStatus()<<endl;
     }
 }
@@ -289,6 +277,7 @@ void Loans::loadLoans()
     ifstream fin;
     int id,num,num2,num3,num4,num5;
     string name;
+    
     fin.open("loans.dat");
     //get the size
     fin >> count; fin.ignore();

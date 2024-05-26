@@ -16,8 +16,6 @@
 
 using namespace std;
 
-bool cont; int save, genId = 0;
-
 LibraryItems::LibraryItems() {
     count = 0;
     loadLibItems();
@@ -26,112 +24,112 @@ LibraryItems::~LibraryItems() {
     storeLibItems();
     cleanUp();
 }
-int LibraryItems::getCount()
+
+int LibraryItems::getCount() { return count; }
+void LibraryItems::incCount() { count++; }
+void LibraryItems::decCount() { count--; }
+
+string inform(int& curramt, int& maxamt)
 {
- return count;
-}
-void LibraryItems::incCount()
-{
- count++;
-}
-void LibraryItems::decCount()
-{
- count--;
+    return curramt == maxamt ? "No match was found.\n" : "A match was found.\n";
 }
 
+string okay(LibraryItem* curramt) { return "okay";}
 
 void LibraryItems::addLibItem()
 {
-    int otype; double num;
+    double price;
     LibraryItem *temp;
+    bool cont;
+    int lastId, generateId = 0, operationType;
 
     //gather info
     if(LibItemList.size() > 0)
     {
-        save = LibItemList.at(LibItemList.size()-1)->getIDNum();
+        lastId = LibItemList.at(LibItemList.size()-1)->getIDNum();
         cont  = true;
     } else {
         cont = false;
     }
 
     cout<<"Enter price: ";
-    cin>>num;
+    cin>>price;
 
-    cout<<"Is this 1. a Library Item, 2. a Book, 3. a Audio CD, or 4. A DVD?: "<<endl;
-    cin>>otype;
+    cout<<"Is this 1. a Library Item, 2. a Book, 3. an Audio CD, or 4. a DVD?: \n";
+    cin>>operationType;
     cin.ignore();
 
-    if(otype == 1){
-        string stat; int lp;
-        cout<<"Enter item status: "; getline(cin,stat);
-        cout<<"Enter item loan period: "; cin>>lp;
+    if(operationType == 1){
+        string status; int loanPeriod;
+        cout<<"Enter item status: "; getline(cin,status);
+        cout<<"Enter item loan period: "; cin>>loanPeriod;
 
-        save++;
+        lastId++;
         if(cont) {
-            temp = new LibraryItem(save, num, stat, lp);
+            temp = new LibraryItem( lastId, price, status, loanPeriod );
         } else {
-            temp = new LibraryItem(genId, num, stat, lp);
+            temp = new LibraryItem( generateId, price, status, loanPeriod );
         }
-    } else if(otype == 2){
+    } else if(operationType == 2){
         string au, ti, in, bc;
-        string stat; int lp;
+        string status; int loanPeriod;
 
-        cout<<"Enter book status: "<<endl; getline(cin, stat);
-        cout<<"Enter book loan period: "<<endl; cin>>lp; cin.ignore();
-        cout<<"Enter book author: "<<endl; getline(cin,au);
-        cout<<"Enter book title: "<<endl; getline(cin,ti);
-        cout<<"Enter book ISBN (xxx-x-xx-xxxxxx-x): "<<endl; getline(cin,in);
-        cout<<"Enter book genre: "<<endl; getline(cin,bc);
+        cout<<"Enter book status: \n"; getline(cin, status);
+        cout<<"Enter book loan period: \n"; cin>>loanPeriod; cin.ignore();
+        cout<<"Enter book author: \n"; getline(cin,au);
+        cout<<"Enter book title: \n"; getline(cin,ti);
+        cout<<"Enter book ISBN (xxx-x-xx-xxxxxx-x): \n"; getline(cin,in);
+        cout<<"Enter book genre: \n"; getline(cin,bc);
 
-        save++;
+        lastId++;
         if(cont) {
-            temp = new Book(save, num, stat, lp, au, ti, in, bc);
+            temp = new Book(lastId, price, status, loanPeriod, au, ti, in, bc);
         } else {
-            temp = new Book(genId, num, stat, lp, au, ti, in, bc);
+            temp = new Book(generateId, price, status, loanPeriod, au, ti, in, bc);
         }
-    } else if(otype == 3){
+    } else if(operationType == 3){
         string ar, ai, ag, rd;
-        int at, lp;
-        string stat;
+        int at, loanPeriod;
+        string status;
 
-        cout<<"Enter audio cd status: "<<endl; getline(cin,stat);
-        cout<<"Enter audio cd loan period: "<<endl; cin>>lp; cin.ignore();
-        cout<<"Enter audio cd artist: "<<endl; getline(cin,ar);
-        cout<<"Enter audio cd title: "<<endl; getline(cin,ai);
-        cout<<"Enter audio cd genre: "<<endl; getline(cin,ag);
-        cout<<"Enter audio cd release date: "<<endl; getline(cin,rd);
+        cout<<"Enter audio cd status: \n"; getline(cin,status);
+        cout<<"Enter audio cd loan period: \n"; cin>>loanPeriod; cin.ignore();
+        cout<<"Enter audio cd artist: \n"; getline(cin,ar);
+        cout<<"Enter audio cd title: \n"; getline(cin,ai);
+        cout<<"Enter audio cd genre: \n"; getline(cin,ag);
+        cout<<"Enter audio cd release date: \n"; getline(cin,rd);
         cout<<"Enter number of tracks on audio cd: "<< endl; cin>>at;
 
-        save++;
+        lastId++;
         if(cont) {
-            temp = new AudioCD(save, num, stat, lp, ar, ai, at, rd, ag);
+            temp = new AudioCD(lastId, price, status, loanPeriod, ar, ai, at, rd, ag);
         } else {
-            temp = new AudioCD(genId, num, stat, lp, ar, ai, at, rd, ag);
+            temp = new AudioCD(generateId, price, status, loanPeriod, ar, ai, at, rd, ag);
         }
-    } else if(otype == 4){
+    } else if(operationType == 4){
         string dt, ds, dc;
         int rt, drl;
-        string stat; int lp;
+        string status; int loanPeriod;
 
-        cout<<"Enter dvd status: "<<endl; getline(cin,stat);
-        cout<<"Enter dvd loan period: "<<endl; cin>>lp; cin.ignore();
-        cout<<"Enter dvd category: "<<endl; getline(cin,dc);
-        cout<<"Enter dvd title: "<<endl; getline(cin,dt);
-        cout<<"Enter dvd studio: "<<endl; getline(cin,ds);
-        cout<<"Enter dvd release date: "<<endl; cin>>drl; cin.ignore();
+        cout<<"Enter dvd status: \n"; getline(cin,status);
+        cout<<"Enter dvd loan period: \n"; cin>>loanPeriod; cin.ignore();
+        cout<<"Enter dvd category: \n"; getline(cin,dc);
+        cout<<"Enter dvd title: \n"; getline(cin,dt);
+        cout<<"Enter dvd studio: \n"; getline(cin,ds);
+        cout<<"Enter dvd release date: \n"; cin>>drl; cin.ignore();
         cout<<"Enter runtime of dvd: "<< endl; cin>>rt;
 
-        save++;
+        lastId++;
         if(cont) {
-            temp = new DVD(save, num, stat, lp, dt, dc, rt, ds, drl);
+            temp = new DVD(lastId, price, status, loanPeriod, dt, dc, rt, ds, drl);
         } else {
-            temp = new DVD(genId, num, stat, lp, dt, dc, rt, ds, drl);
+            temp = new DVD(generateId, price, status, loanPeriod, dt, dc, rt, ds, drl);
         }
     }
 
     LibItemList.push_back(temp);
-    incCount();
-    genId++;
+    count++;
+    generateId++;
 }
 
 void LibraryItems::deleLibItem(int x)
@@ -143,28 +141,13 @@ void LibraryItems::deleLibItem(int x)
         if (LibItemList[i]->getIDNum() == x)
         {
             LibItemList.erase(LibItemList.begin()+i);
-            decCount();
+            count--;
             return;
         }
     }
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"No match found."<<endl;
+    cout<<inform(i,count);
 }
-/*
-LibraryItem* LibraryItems::findBook(int y)
-{
-    Book *temp;
-    //find and return book
-    for (int i =0; i < count; i++)
-    {
-        if (bookList[i]->getLibID() == y) return bookList[i];
-        
-    }
-  
-    return NULL;
-}
-*/
 
 void LibraryItems::addNSet(double x2,char task3)
 {
@@ -199,8 +182,7 @@ double LibraryItems::findNGetPrice(int x5)
             return LibItemList[i]->getCost();
     }
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"No match found."<<endl;
+    cout<<inform(i,count);
 
     return -1.0;
 }
@@ -215,8 +197,7 @@ int LibraryItems::findLoanPeriod(int x6)
             return LibItemList[i]->getLoanPer();
     }
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"No match found."<<endl;
+    cout<<inform(i,count);
 
     return -1;
 }
@@ -234,8 +215,7 @@ void LibraryItems::editP(int x2, double xd)
     }
 
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"No match found."<<endl;
+    cout<<inform(i,count);
 }
 
 void LibraryItems::findNPrint(int x1) {
@@ -255,10 +235,13 @@ void LibraryItems::findNPrint(int x1) {
             return;
         }
     }
-
+    
     //tell user what they entered was not found
-    if(it == LibItemList.end())
-        cout<<"No match found."<<endl;
+    auto inform = [&](auto curr, auto end) -> string {
+        return curr == end ? "No match was found.\n" : "A match was found.\n";
+    };
+
+    cout << inform(it, LibItemList.end());
 }
 
 void LibraryItems::printLibItem() {
@@ -284,9 +267,9 @@ void LibraryItems::printLibItem() {
 void LibraryItems::loadLibItems()
 {
     ifstream fin;
-    int id, itype, lp; 
-    double num;
-    string stat;
+    int id, itype, loanPeriod; 
+    double price;
+    string status;
 
     fin.open("items.dat");
     //get size for the vector
@@ -297,14 +280,14 @@ void LibraryItems::loadLibItems()
     for ( int i=0; i < count; i++)
     {
         
-        fin >> id >> num;
-        fin >> stat;
-        fin >> lp >> itype;
+        fin >> id >> price;
+        fin >> status;
+        fin >> loanPeriod >> itype;
 
         switch (itype)
         {
             case 1:
-                LibItemList.push_back(new LibraryItem(id, num, stat, lp));
+                LibItemList.push_back(new LibraryItem(id, price, status, loanPeriod));
                 break;
             case 2:
             {
@@ -314,7 +297,7 @@ void LibraryItems::loadLibItems()
                 getline(fin, s3, ',');
                 getline(fin, s4);
 
-                LibItemList.push_back(new Book(id, num, stat, lp, s, s2, s3, s4));
+                LibItemList.push_back(new Book(id, price, status, loanPeriod, s, s2, s3, s4));
             }
             break;
             case 3:
@@ -330,7 +313,7 @@ void LibraryItems::loadLibItems()
                 getline(fin,s4,',');
                 getline(fin,s3);
 
-                LibItemList.push_back(new AudioCD(id, num, stat, lp, s, s2, i2, s4, s3));
+                LibItemList.push_back(new AudioCD(id, price, status, loanPeriod, s, s2, i2, s4, s3));
             }
             break;
             case 4:
@@ -347,7 +330,7 @@ void LibraryItems::loadLibItems()
                 
                 fin>>i3;
 
-                LibItemList.push_back(new DVD(id, num, stat, lp, s, s2, i2, s3, i3));
+                LibItemList.push_back(new DVD(id, price, status, loanPeriod, s, s2, i2, s3, i3));
             }
         }
     }

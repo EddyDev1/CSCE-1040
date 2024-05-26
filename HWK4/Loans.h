@@ -10,25 +10,25 @@ void incCount();
 void decCount();
 
 void addLoan();
-void deleLoan(int x);
+void deleteLoan(int loanID);
 void printLoans();
-Loans* findLoan(int y);
-void findNPrint(int z);
-void printOD();
-void listPatItems();
+Loans* findLoan(int loanID);
+void findAndPrintLoan(int loanID);
+void printOverdueLoans();
+void listPatronItems();
 void lostBook();
-void editLoan(int xx);
-void findNSetStatus();
-void recheckLoan(int xx3);
+void editLoan(int loanID);
+void findAndSetStatus();
+void recheckLoan(int loanID);
 void updateFine();
-void editLID(int xx4);
+void editLoanID(int new_loanID);
 
 void loadLoans();
 void storeLoans();
 void cleanUp();
+
 private:
 int count;
 vector<Loan*> loanList;
-
 };
 
