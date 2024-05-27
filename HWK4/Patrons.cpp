@@ -72,11 +72,8 @@ void Patrons::deletePatron(int id)
 
 Patron* Patrons::findPatron(int id)
 {
-    for (int i =0; i < count; i++) //loop till patron is found
-        if (patronList[i]->getID() == id) 
-            return patronList[i];
-        
-    return NULL;
+    auto it = find_if(patronList.begin(), patronList.end(), [id](Patron* p) { return p->getID() == id; });
+    return it != patronList.end() ? *it : NULL;
 }
 void Patrons::updatePatronBooks(int id , char task)
 {
