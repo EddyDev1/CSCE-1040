@@ -29,9 +29,9 @@ int LibraryItems::getCount() { return count; }
 void LibraryItems::incCount() { count++; }
 void LibraryItems::decCount() { count--; }
 
-string LibraryItems::inform(int& curramt, int& maxamt)
+string LibraryItems::inform(const int& curr, const int& end) 
 {
-    return curramt == maxamt ? "No match was found.\n" : "A match was found.\n";
+    return curr == end ? "No match was found.\n" : "A match was found.\n";
 }
 
 void LibraryItems::addLibraryItem()
@@ -178,13 +178,13 @@ double LibraryItems::findAndGetPrice(int id)
     return -1.0;
 }
 
-int LibraryItems::findLoanPeriod(int x6)
+int LibraryItems::findLoanPeriod(int id)
 {
     int i = 0;
     for (; i < count; i++)
     {
         //find book and return the price
-        if (LibItemList[i]->getIDNum() == x6)
+        if (LibItemList[i]->getIDNum() == id)
             return LibItemList[i]->getLoanPer();
     }
     //tell user what they entered was not found
@@ -228,11 +228,7 @@ void LibraryItems::printItem(int x1) {
     }
 
     //tell user what they entered was not found
-    auto inform = [&](auto curr, auto end) -> string {
-        return curr == end ? "No match was found.\n" : "A match was found.\n";
-    };
-
-    cout << inform(it, LibItemList.end());
+    cout << inform( int(it - LibItemList.begin()) , count );
 }
 
 void LibraryItems::printAllLibraryItems() {

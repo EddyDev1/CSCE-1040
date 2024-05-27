@@ -232,7 +232,7 @@ void Loans::findAndPrintLoan(int id)
         }
     }
 
-    cout<<"No match found."<<endl;
+    lit.inform(count, count);
 }
 
 
