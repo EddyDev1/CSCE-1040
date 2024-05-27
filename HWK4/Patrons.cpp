@@ -19,38 +19,32 @@ void Patrons::addPatron()
 {
     const int id_generator = 100000;
 
-    string buff; 
-    int num2, save3, id_gen = 0; 
-    double num;
+    string name; 
+    int nitems, lastId = 0, id_gen = 0; 
+    double balance;
     Patron *temp;
-    bool check3;
     
     //calculate patron id
     if(patronList.size() > 0)
-    {
-        save3 = patronList.at(patronList.size()-1)->getID();
-	    check3 = true;
-    } else {
-	    check3 = false;
-    }
+        lastId = patronList.at(patronList.size()-1)->getID();
 
     id_gen += id_generator;
     //get patron info
     cout << "Enter name: ";
     cin.ignore();
-    getline(cin, buff);
+    getline(cin, name);
 
     cout<<"Enter patron balance: ";
-    cin>>num;
+    cin>>balance;
     cin.ignore();
 
     cout<<"Enter amount of items: ";
-    cin>>num2;
+    cin>>nitems;
     //create patron
-    if(check3)
-        temp = new Patron( buff, ++save3, num, num2 ), id_gen = save3;
+    if(lastId)
+        temp = new Patron( name, ++lastId, balance, nitems ), id_gen = lastId;
     else
-	    temp = new Patron( buff, id_generator, num, num2 );
+	    temp = new Patron( name, id_generator, balance, nitems );
     
     patronList.push_back(temp);
     //update trackers
@@ -58,19 +52,19 @@ void Patrons::addPatron()
     id_gen++;
 }
 
-void Patrons::delePatron(int id)
+void Patrons::deletePatron(int id)
 { // track failed attempts when searching for id match
 //find user by looping through vector
-    int j = 0;
+    int idx = 0;
     for (auto& pat: patronList)
     {
         if (pat->getID() == id)
         {
-            patronList.erase(patronList.begin()+j);
+            patronList.erase(patronList.begin()+idx);
             count--;
             return;
         }
-        j++;
+        idx++;
     }
     
     cout<<"Patron does not exist."<<endl;
@@ -84,7 +78,7 @@ Patron* Patrons::findPatron(int id)
         
     return NULL;
 }
-void Patrons::addNSetPatron(int id , char task)
+void Patrons::updatePatronBooks(int id , char task)
 {
     double rate = 0.25;
 //find patron and update a variety of things
@@ -124,7 +118,7 @@ void Patrons::setPatronDebt(int id, double amt)
     }
 }
 
-void Patrons::editN(int id, string name)
+void Patrons::editPatronName(int id, string name)
 { 
     auto it = find_if(patronList.begin(), patronList.end(), [id](Patron* p) { return p->getID() == id; });
     if (it != patronList.end())
@@ -132,12 +126,12 @@ void Patrons::editN(int id, string name)
     else
         cout << "Patron does not exist." << endl;
 }
-int Patrons::findNGetBooks(int id)
+int Patrons::findAndGetPatronBooks(int id)
 {
     auto it = find_if(patronList.begin(), patronList.end(), [id](Patron* p) { return p->getID() == id; } );
     return it != patronList.end() ? (*it)->getBooks() : -1;
 }
-void Patrons::findNPrint(int id)
+void Patrons::findAndPrintPatron(int id)
 { 
     int i = 0;
     for (; i < count; i++)
@@ -161,7 +155,7 @@ void Patrons::payFines(int id)
     {
         //if user is found update their bal
     if(patronList[i]->getID()==id){
-        findNPrint(id);
+        findAndPrintPatron(id);
         cout<<"Enter amount: ";
         cin>>paymentAmt;
         if((patronList[i]->getBal() - paymentAmt) >= 0) {
@@ -205,7 +199,7 @@ void Patrons::storePatrons()
    for (auto it = patronList.begin(); it !=patronList.end(); ++it)
     {
         temp= *it;
-        fout<< temp->getID() <<" ,"<< temp->getName() <<", "<<temp->getBal()<<" "<<temp->getBooks()<<endl;
+        fout<< temp->getID() <<' '<< temp->getName() <<", "<<temp->getBal()<<' '<<temp->getBooks()<<endl;
     }
     fout.close();
 }
@@ -213,10 +207,10 @@ void Patrons::storePatrons()
 void Patrons::loadPatrons()
 {
     ifstream fin;
-    int id, num; 
-    double mon;
-    string name, grabSpace;
-    
+    int id, items; 
+    double bal;
+    string name;
+
     fin.open("patrons.dat");
     //establish size of vector
     fin >> count; fin.ignore();
@@ -225,13 +219,9 @@ void Patrons::loadPatrons()
     for ( int i=0; i < count; i++)
     {
         fin >> id;
-        
-        getline(fin,grabSpace,',');
-	    getline(fin, name,',');
-	    
-        fin >> mon >> num;
-        
-        patronList.push_back( new Patron(name,id,mon,num) );
+        getline(fin, name, ','); 
+        fin >> bal >> items;
+        patronList.push_back( new Patron(name,id,bal,items) );
     }
 
     fin.close();

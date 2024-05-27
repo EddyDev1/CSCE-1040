@@ -29,28 +29,21 @@ int LibraryItems::getCount() { return count; }
 void LibraryItems::incCount() { count++; }
 void LibraryItems::decCount() { count--; }
 
-string inform(int& curramt, int& maxamt)
+string LibraryItems::inform(int& curramt, int& maxamt)
 {
     return curramt == maxamt ? "No match was found.\n" : "A match was found.\n";
 }
 
-string okay(LibraryItem* curramt) { return "okay";}
-
-void LibraryItems::addLibItem()
+void LibraryItems::addLibraryItem()
 {
     double price;
     LibraryItem *temp;
-    bool cont;
-    int lastId, generateId = 0, operationType;
+    int lastId = 0, generateId = 0, operationType, loanPeriod;
+    string status, genre, release_date, title;
 
     //gather info
     if(LibItemList.size() > 0)
-    {
         lastId = LibItemList.at(LibItemList.size()-1)->getIDNum();
-        cont  = true;
-    } else {
-        cont = false;
-    }
 
     cout<<"Enter price: ";
     cin>>price;
@@ -59,71 +52,69 @@ void LibraryItems::addLibItem()
     cin>>operationType;
     cin.ignore();
 
-    if(operationType == 1){
-        string status; int loanPeriod;
-        cout<<"Enter item status: "; getline(cin,status);
-        cout<<"Enter item loan period: "; cin>>loanPeriod;
+    switch(operationType)
+    {
+        case 1:
+        {
+            cout<<"Enter item status: "; getline(cin,status);
+            cout<<"Enter item loan period: "; cin>>loanPeriod;
 
-        lastId++;
-        if(cont) {
-            temp = new LibraryItem( lastId, price, status, loanPeriod );
-        } else {
-            temp = new LibraryItem( generateId, price, status, loanPeriod );
+            temp = lastId ? new LibraryItem( ++lastId, price, status, loanPeriod ) : new LibraryItem( generateId, price, status, loanPeriod );
         }
-    } else if(operationType == 2){
-        string au, ti, in, bc;
-        string status; int loanPeriod;
+        break;
+        case 2:
+        {
+            string author, isbn, genre;
 
-        cout<<"Enter book status: \n"; getline(cin, status);
-        cout<<"Enter book loan period: \n"; cin>>loanPeriod; cin.ignore();
-        cout<<"Enter book author: \n"; getline(cin,au);
-        cout<<"Enter book title: \n"; getline(cin,ti);
-        cout<<"Enter book ISBN (xxx-x-xx-xxxxxx-x): \n"; getline(cin,in);
-        cout<<"Enter book genre: \n"; getline(cin,bc);
+            cout<<"Enter book status: \n"; getline(cin, status);
+            cout<<"Enter book loan period: \n"; cin>>loanPeriod; cin.ignore();
+            cout<<"Enter book author: \n"; getline(cin,author);
+            cout<<"Enter book title: \n"; getline(cin,title);
+            cout<<"Enter book ISBN (xxx-x-xx-xxxxxx-x): \n"; getline(cin,isbn);
+            cout<<"Enter book genre: \n"; getline(cin,genre);
 
-        lastId++;
-        if(cont) {
-            temp = new Book(lastId, price, status, loanPeriod, au, ti, in, bc);
-        } else {
-            temp = new Book(generateId, price, status, loanPeriod, au, ti, in, bc);
+            if(lastId)
+                temp = new Book(++lastId, price, status, loanPeriod, author, title, isbn, genre);
+            else
+                temp = new Book(generateId, price, status, loanPeriod, author, title, isbn, genre);
         }
-    } else if(operationType == 3){
-        string ar, ai, ag, rd;
-        int at, loanPeriod;
-        string status;
+        break;
+        case 3:
+        {
+            string artist;
+            int ntracks;
 
-        cout<<"Enter audio cd status: \n"; getline(cin,status);
-        cout<<"Enter audio cd loan period: \n"; cin>>loanPeriod; cin.ignore();
-        cout<<"Enter audio cd artist: \n"; getline(cin,ar);
-        cout<<"Enter audio cd title: \n"; getline(cin,ai);
-        cout<<"Enter audio cd genre: \n"; getline(cin,ag);
-        cout<<"Enter audio cd release date: \n"; getline(cin,rd);
-        cout<<"Enter number of tracks on audio cd: "<< endl; cin>>at;
+            cout<<"Enter audio cd status: \n"; getline(cin,status);
+            cout<<"Enter audio cd loan period: \n"; cin>>loanPeriod; cin.ignore();
+            cout<<"Enter audio cd artist: \n"; getline(cin,artist);
+            cout<<"Enter audio cd title: \n"; getline(cin,title);
+            cout<<"Enter audio cd genre: \n"; getline(cin,genre);
+            cout<<"Enter audio cd release date: \n"; getline(cin,release_date);
+            cout<<"Enter number of tracks on audio cd: "<< endl; cin>>ntracks;
 
-        lastId++;
-        if(cont) {
-            temp = new AudioCD(lastId, price, status, loanPeriod, ar, ai, at, rd, ag);
-        } else {
-            temp = new AudioCD(generateId, price, status, loanPeriod, ar, ai, at, rd, ag);
+            if(lastId)
+                temp = new AudioCD(++lastId, price, status, loanPeriod, artist, title, ntracks, release_date, genre);
+            else
+                temp = new AudioCD(generateId, price, status, loanPeriod, artist, title, ntracks, release_date, genre);
         }
-    } else if(operationType == 4){
-        string dt, ds, dc;
-        int rt, drl;
-        string status; int loanPeriod;
+        break;
+        case 4:
+        {
+            string studio_name, category;
+            int runtime;
 
-        cout<<"Enter dvd status: \n"; getline(cin,status);
-        cout<<"Enter dvd loan period: \n"; cin>>loanPeriod; cin.ignore();
-        cout<<"Enter dvd category: \n"; getline(cin,dc);
-        cout<<"Enter dvd title: \n"; getline(cin,dt);
-        cout<<"Enter dvd studio: \n"; getline(cin,ds);
-        cout<<"Enter dvd release date: \n"; cin>>drl; cin.ignore();
-        cout<<"Enter runtime of dvd: "<< endl; cin>>rt;
+            cout<<"Enter dvd status: \n"; getline(cin,status);
+            cout<<"Enter dvd loan period: \n"; cin>>loanPeriod; cin.ignore();
+            cout<<"Enter dvd category: \n"; getline(cin,category);
+            cout<<"Enter dvd title: \n"; getline(cin,title);
+            cout<<"Enter dvd studio: \n"; getline(cin,studio_name);
+            cout<<"Enter dvd release date: \n"; cin>>release_date; cin.ignore();
+            cout<<"Enter runtime of dvd: "<< endl; cin>>runtime;
 
-        lastId++;
-        if(cont) {
-            temp = new DVD(lastId, price, status, loanPeriod, dt, dc, rt, ds, drl);
-        } else {
-            temp = new DVD(generateId, price, status, loanPeriod, dt, dc, rt, ds, drl);
+            if(lastId)
+                temp = new DVD(++lastId, price, status, loanPeriod, title, category, runtime, studio_name, release_date);
+            else
+                temp = new DVD(generateId, price, status, loanPeriod, title, category, runtime, studio_name, release_date);
         }
     }
 
@@ -132,7 +123,7 @@ void LibraryItems::addLibItem()
     generateId++;
 }
 
-void LibraryItems::deleLibItem(int x)
+void LibraryItems::deleteLibraryItem(int x)
 { 
     int i = 0;
     for (; i < count; i++)
@@ -149,14 +140,14 @@ void LibraryItems::deleLibItem(int x)
     cout<<inform(i,count);
 }
 
-void LibraryItems::addNSet(double x2,char task3)
+void LibraryItems::setBookStatus(int x2,char task)
 {
     //find book and update a variety of stuff
     for (int i =0; i < count; i++)
     {
         if (LibItemList[i]->getIDNum() == x2)
         {
-            switch (toupper(task3))
+            switch (toupper(task))
             {
                 case 'A':
                     LibItemList[i]->setStatus("Out");
@@ -172,13 +163,13 @@ void LibraryItems::addNSet(double x2,char task3)
     }
 }
 
-double LibraryItems::findNGetPrice(int x5)
+double LibraryItems::findAndGetPrice(int id)
 {
     int i = 0;
     for (; i < count; i++)
     {
         //find book and return the price
-        if (LibItemList[i]->getIDNum() == x5)
+        if (LibItemList[i]->getIDNum() == id)
             return LibItemList[i]->getCost();
     }
     //tell user what they entered was not found
@@ -202,14 +193,14 @@ int LibraryItems::findLoanPeriod(int x6)
     return -1;
 }
 
-void LibraryItems::editP(int x2, double xd)
+void LibraryItems::updateItemPrice(int id, double amt)
 { 
     int i = 0;
     for (; i < count; i++)
     {
-        if (LibItemList[i]->getIDNum() == x2)
+        if (LibItemList[i]->getIDNum() == id)
         {
-            LibItemList[i]->setCost(xd);
+            LibItemList[i]->setCost(amt);
             return;
         }
     }
@@ -218,7 +209,7 @@ void LibraryItems::editP(int x2, double xd)
     cout<<inform(i,count);
 }
 
-void LibraryItems::findNPrint(int x1) {
+void LibraryItems::printItem(int x1) {
     auto it = LibItemList.begin();
     for (; it != LibItemList.end(); ++it) {
         if ((*it)->getIDNum() == x1) {
@@ -235,7 +226,7 @@ void LibraryItems::findNPrint(int x1) {
             return;
         }
     }
-    
+
     //tell user what they entered was not found
     auto inform = [&](auto curr, auto end) -> string {
         return curr == end ? "No match was found.\n" : "A match was found.\n";
@@ -244,7 +235,7 @@ void LibraryItems::findNPrint(int x1) {
     cout << inform(it, LibItemList.end());
 }
 
-void LibraryItems::printLibItem() {
+void LibraryItems::printAllLibraryItems() {
     for(auto it = LibItemList.begin(); it != LibItemList.end(); ++it) {
         if (typeid(**it) == typeid(LibraryItem)) {
             (*it)->print();
@@ -318,8 +309,8 @@ void LibraryItems::loadLibItems()
             break;
             case 4:
             {
-                string s,s2,s3;
-                int i2,i3;
+                string s,s2,s3, i3;
+                int i2;
                 
                 getline(fin, s, ',');
                 getline(fin, s2, ',');

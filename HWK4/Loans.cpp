@@ -39,11 +39,11 @@ void Loans::addLoan()
     cin>>patronId;
     cin.ignore();
 
-    lit.addNSet(itemId,toupper('a'));
-	pat.addNSetPatron(patronId,toupper('a'));
+    lit.setBookStatus(itemId,toupper('a'));
+	pat.updatePatronBooks(patronId,toupper('a'));
     
 //create loans
-    if(pat.findNGetBooks(patronId) + 1 < 7)
+    if(pat.findAndGetPatronBooks(patronId) + 1 < 7)
     {
         time_t time_at_checkout = time(0);
         dueDate = int(time(0))+(timer*(lit.findLoanPeriod(itemId)));
@@ -75,9 +75,9 @@ void Loans::deleteLoan(int id)
         {
             if(currTime < loanList[i]->getDueDate())
             {
-                pat.addNSetPatron(loanList[i]->getPatronID(),'d');
-                pat.addNSetPatron(loanList[i]->getPatronID(),'f');
-                lit.addNSet(loanList[i]->getLibItemID(),'d');
+                pat.updatePatronBooks(loanList[i]->getPatronID(),'d');
+                pat.updatePatronBooks(loanList[i]->getPatronID(),'f');
+                lit.setBookStatus(loanList[i]->getLibItemID(),'d');
                 loanList.erase(loanList.begin()+i);
                 count--;
                 return;
@@ -106,7 +106,7 @@ void Loans::printOverdueLoans()
             char* date_time = ctime(&time);
             cout << "Loan id: " << temp->getLoanID() << " Library item id: " << temp->getLibItemID() <<" Patron id: "<<temp->getPatronID()<<" Due date: "<<date_time
             <<" Loan Status: "<<temp->getStatus()<<endl;
-            pat.findNPrint(temp->getPatronID());
+            pat.findAndPrintPatron(temp->getPatronID());
             l++;
         }
     }
@@ -138,14 +138,13 @@ void Loans::listPatronItems()
     {
         //if data entered is found update info
         if(loanList[i]->getPatronID() == patronId){
-            lit.findNPrint(loanList[i]->getLibItemID());
+            lit.printItem(loanList[i]->getLibItemID());
             return;
         } 
 	}
     
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"Patron has 0 Library items checked out."<<endl;
+    lit.inform(i, count);
 }
 
 void Loans::editLoanID(int new_id)
@@ -165,8 +164,7 @@ void Loans::editLoanID(int new_id)
 	}
 
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"No match found."<<endl;
+    lit.inform(i, count);
 }
 
 void Loans::lostBook()
@@ -181,15 +179,14 @@ void Loans::lostBook()
     //if info entered is found update info
         if(loanList[i]->getLibItemID() == itemId)
         {
-	        lit.addNSet(itemId,'l');
-	        pat.setPatronDebt(loanList[i]->getPatronID(), lit.findNGetPrice(itemId));
+	        lit.setBookStatus(itemId,'l');
+	        pat.setPatronDebt(loanList[i]->getPatronID(), lit.findAndGetPrice(itemId));
             return;
         }
     }
 
     //tell user what they entered was not found
-    if(i == count)
-        cout<<"No match found."<<endl;
+    lit.inform(i, count);
 }
 
 
@@ -277,7 +274,7 @@ void Loans::loadLoans()
     ifstream fin;
     int id,num,num2,num3,num4,num5;
     string name;
-    
+
     fin.open("loans.dat");
     //get the size
     fin >> count; fin.ignore();

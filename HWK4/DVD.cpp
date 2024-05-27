@@ -4,7 +4,7 @@
 #include "DVD.h"
 using namespace std;
 
-DVD::DVD(int x, double y, string z, int a, string dvt, string dvc, int dvrt, string dvs, int drd): LibraryItem(x,y,z,a){
+DVD::DVD(int x, double y, string z, int a, string dvt, string dvc, int dvrt, string dvs, string drd): LibraryItem(x,y,z,a){
     dvdTitle = dvt;
     dvdCat = dvc;
     runTime = dvrt;
@@ -26,5 +26,5 @@ string DVD::getDTitle(){ return dvdTitle;}
 string DVD::getDCat(){ return dvdCat;}
 int DVD::getRunTime(){ return runTime;}
 string DVD::getStudio(){ return studio;}
-int DVD::getDRelDate(){ return dvdRelDate;}
+string DVD::getDRelDate(){ return dvdRelDate;}
 

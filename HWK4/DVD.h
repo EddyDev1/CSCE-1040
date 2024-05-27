@@ -3,7 +3,7 @@ using namespace std;
 
 class DVD : public LibraryItem{
 public:
-    DVD(int, double, string, int, string, string, int, string, int);
+    DVD(int, double, string, int, string, string, int, string, string);
 
     void setDTitle(string);
     void setDCat(string);
@@ -16,12 +16,12 @@ public:
     string getDCat();
     int getRunTime();
     string getStudio();
-    int getDRelDate();
+    string getDRelDate();
 
 private:
     string dvdTitle;
     string dvdCat;
     int runTime;
     string studio;
-    int dvdRelDate;
+    string dvdRelDate;
 };

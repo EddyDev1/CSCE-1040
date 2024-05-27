@@ -13,15 +13,15 @@ void incCount();
 void decCount();
 
 void addPatron();
-void delePatron(int x);
+void deletePatron(int id);
 void printPatrons();
-Patron* findPatron(int y);
-void addNSetPatron(int xx , char aa);
-void findNPrint(int xxx);
-void payFines(int x5);
-void setPatronDebt(int x6, double x7);
-void editN(int x9, string b);
-int findNGetBooks(int x8);
+Patron* findPatron(int id);
+void updatePatronBooks(int id, char operationType);
+void findAndPrintPatron(int id);
+void payFines(int id);
+void setPatronDebt(int id, double debt);
+void editPatronName(int id, string b);
+int findAndGetPatronBooks(int id);
 
 void loadPatrons();
 void storePatrons();

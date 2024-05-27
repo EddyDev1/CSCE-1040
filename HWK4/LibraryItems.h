@@ -15,16 +15,17 @@ int getCount();
 void incCount();
 void decCount();
 
-void addLibItem();
-void deleLibItem(int x);
-void printLibItem();
+void addLibraryItem();
+void deleteLibraryItem(int id);
+void printAllLibraryItems();
 LibraryItem* findLibItem(int y);
 
-void addNSet(double xxx,char taskk);
-void findNPrint(int x4);
-void editP(int xx, double xD);
-double findNGetPrice(int x5);
-int findLoanPeriod(int x6);
+void setBookStatus(int id, char status);
+void printItem(int id);
+string inform(int&, int&);
+void updateItemPrice(int id, double new_price);
+double findAndGetPrice(int id);
+int findLoanPeriod(int id);
 
 
 void loadLibItems();

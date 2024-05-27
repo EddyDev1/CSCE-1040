@@ -4,7 +4,7 @@ using namespace std;
 
 class LibraryItem{
 public:
-    LibraryItem(int, double, string, int);
+    LibraryItem(int id, double price, string status, int checkoutPeriod) : IDNum(id), cost(price), status(status), loanPer(checkoutPeriod) {};
     virtual ~LibraryItem(){ }
 
     void setIDNum(int);

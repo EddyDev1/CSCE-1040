@@ -50,13 +50,13 @@ switch(choice)
  case 2:
  cout<<"Enter patron id: "<<endl;
  cin>>ids;
- pat.delePatron(ids);
+ pat.deletePatron(ids);
  pat.storePatrons();
  break;
  case 3:
  cout<<"Enter patron id: ";
  cin>>ids;
- pat.findNPrint(ids);
+ pat.findAndPrintPatron(ids);
  break;
  case 4:
  pat.printPatrons();
@@ -66,7 +66,7 @@ switch(choice)
  cin>>ids; cin.ignore();
  cout<<"Enter the new name: "<<endl;
  getline(cin,nameC);
- pat.editN(ids,nameC);
+ pat.editPatronName(ids,nameC);
  pat.storePatrons();
  break;
  case 6:
@@ -87,27 +87,27 @@ switch(choice)
  cin>>choice2;
  switch(choice2){
  case 1:
- lit.addLibItem();
+ lit.addLibraryItem();
  break;
  case 2:
  cout<<"Enter library item id: "<<endl;
  cin>>ids;
- lit.deleLibItem(ids);
+ lit.deleteLibraryItem(ids);
  break;
  case 3:
  cout<<"Enter library item id: "<<endl;
  cin>>ids;
- lit.findNPrint(ids);
+ lit.printItem(ids);
  break;
  case 4:
- lit.printLibItem();
+ lit.printAllLibraryItems();
  break;
  case 5:
  cout<<"Enter library item id: ";
  cin>>ids; cin.ignore();
  cout<<"Enter new price: ";
  cin>>choice3; cin.ignore();
- lit.editP(ids,choice3);
+ lit.updateItemPrice(ids,choice3);
  break;
  default:
  cout<<"Wrong input. Try again."<<endl;
@@ -128,17 +128,17 @@ switch(choice)
  case 2:
  cout<<"Enter loan id: ";
  cin>>ids; cin.ignore();
- lon.deleLoan(ids);
+ lon.deleteLoan(ids);
  lon.storeLoans();
  break;
  case 3:
- lon.listPatItems();
+ lon.listPatronItems();
  break;
  case 4:
  lon.printLoans();
  break;
  case 5:
- lon.printOD();
+ lon.printOverdueLoans();
  break;
  case 6:
  cout<<"Enter loan id: ";
@@ -148,7 +148,7 @@ switch(choice)
  case 7:
 cout<<"Change the loan id number to? ";
 cin>>ids; cin.ignore();
- lon.editLID(ids);
+ lon.editLoanID(ids);
  lon.storeLoans();
  break;
  case 8:
